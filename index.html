@@ -114,6 +114,28 @@
                     <span class="chain-name">Bitcoin</span>
                 </button>
             </div>
+<!-- Settings Modal -->
+<div id="settings-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Settings</h2>
+      <p>Encrypt mnemonic, export mnemonic or logout</p>
+    </div>
+
+    <div class="form-group">
+      <label>Encryption Password (local device)</label>
+      <input type="password" id="settings-password" class="input-field" placeholder="Enter password to encrypt mnemonic">
+      <small style="color:var(--text-secondary);display:block;margin-top:8px;">If you set a password, mnemonics will be encrypted locally. Do not forget this password.</small>
+    </div>
+
+    <div class="modal-actions">
+      <button id="export-mnemonic-btn" class="btn btn-secondary">Export Mnemonic</button>
+      <button id="logout-btn" class="btn btn-secondary">Logout (Local)</button>
+      <button id="save-settings-btn" class="btn btn-primary">Save Settings</button>
+    </div>
+    <button class="close-btn" id="close-settings-modal">✕</button>
+  </div>
+</div>
         </header>
 
         <!-- Balance Card -->
