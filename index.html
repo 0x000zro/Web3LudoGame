@@ -1,1 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366f1">
+    <title>Multi-Chain Wallet - Powered by Tether WDK</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login/Create Screen -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="logo-section">
+                <div class="logo-icon">🔐</div>
+                <h1 class="app-title">Multi-Chain Wallet</h1>
+                <p class="app-subtitle">Powered by Tether WDK</p>
+            </div>
+            
+            <div class="auth-buttons">
+                <button id="create-wallet-btn" class="btn btn-primary">
+                    <span class="btn-icon">✨</span>
+                    Create New Wallet
+                </button>
+                
+                <button id="import-wallet-btn" class="btn btn-secondary">
+                    <span class="btn-icon">📥</span>
+                    Import Existing Wallet
+                </button>
+            </div>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-icon">🔒</span>
+                    <span>Self-Custodial & Secure</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🌐</span>
+                    <span>Multi-Chain Support</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <span>Lightning Fast</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mnemonic Display Modal -->
+    <div id="mnemonic-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚠️ Save Your Recovery Phrase</h2>
+                <p class="warning-text">Write down these 12 words in order. Keep them safe and never share them!</p>
+            </div>
+            <div class="mnemonic-grid" id="mnemonic-words"></div>
+            <div class="modal-actions">
+                <button id="copy-mnemonic-btn" class="btn btn-secondary">📋 Copy</button>
+                <button id="confirm-mnemonic-btn" class="btn btn-primary">✅ I've Saved It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Mnemonic Modal -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Import Wallet</h2>
+                <p>Enter your 12 or 24 word recovery phrase</p>
+            </div>
+            <textarea id="import-mnemonic-input" class="mnemonic-input" 
+                      placeholder="word1 word2 word3 ..." rows="4"></textarea>
+            <div class="modal-actions">
+                <button id="cancel-import-btn" class="btn btn-secondary">Cancel</button>
+                <button id="confirm-import-btn" class="btn btn-primary">Import Wallet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Wallet Screen -->
+    <div id="wallet-screen" class="screen">
+        <!-- Header -->
+        <header class="wallet-header">
+            <div class="header-top">
+                <h1>My Wallet</h1>
+                <button id="refresh-btn" class="icon-btn">🔄</button>
+            </div>
+            
+            <!-- Chain Selector -->
+            <div class="chain-selector">
+                <button class="chain-btn active" data-chain="ethereum">
+                    <span class="chain-icon">Ξ</span>
+                    <span class="chain-name">Ethereum</span>
+                </button>
+                <button class="chain-btn" data-chain="polygon">
+                    <span class="chain-icon">⬡</span>
+                    <span class="chain-name">Polygon</span>
+                </button>
+                <button class="chain-btn" data-chain="arbitrum">
+                    <span class="chain-icon">◆</span>
+                    <span class="chain-name">Arbitrum</span>
+                </button>
+                <button class="chain-btn" data-chain="tron">
+                    <span class="chain-icon">Ⓣ</span>
+                    <span class="chain-name">TRON</span>
+                </button>
+                <button class="chain-btn" data-chain="bitcoin">
+                    <span class="chain-icon">₿</span>
+                    <span class="chain-name">Bitcoin</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-label">Total Balance</div>
+            <div class="balance-amount" id="balance-amount">0.00</div>
+            <div class="balance-currency" id="balance-currency">ETH</div>
+            
+            <div class="address-section">
+                <div class="address-label">Address</div>
+                <div class="address-display">
+                    <span id="wallet-address">0x0000...0000</span>
+                    <button id="copy-address-btn" class="icon-btn-small">📋</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="action-btn" id="send-btn">
+                <span class="action-icon">📤</span>
+                <span class="action-label">Send</span>
+            </button>
+            <button class="action-btn" id="receive-btn">
+                <span class="action-icon">📥</span>
+                <span class="action-label">Receive</span>
+            </button>
+            <button class="action-btn" id="swap-btn">
+                <span class="action-icon">🔄</span>
+                <span class="action-label">Swap</span>
+            </button>
+            <button class="action-btn" id="settings-btn">
+                <span class="action-icon">⚙️</span>
+                <span class="action-label">Settings</span>
+            </button>
+        </div>
+
+        <!-- Tokens Section -->
+        <div class="tokens-section">
+            <div class="section-header">
+                <h2>Assets</h2>
+                <button id="add-token-btn" class="btn-link">+ Add Token</button>
+            </div>
+            <div id="tokens-list" class="tokens-list">
+                <!-- Tokens will be dynamically loaded -->
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="spinner"></div>
+            <p class="loading-text">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Send Modal -->
+    <div id="send-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Send</h2>
+                <button class="close-btn" id="close-send-modal">✕</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Recipient Address</label>
+                <input type="text" id="send-recipient" class="input-field" 
+                       placeholder="0x... or address">
+            </div>
+            
+            <div class="form-group">
+                <label>Amount</label>
+                <div class="input-with-max">
+                    <input type="number" id="send-amount" class="input-field" 
+                           placeholder="0.00" step="0.000001">
+                    <button id="max-btn" class="max-btn">MAX</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Token</label>
+                <select id="send-token-select" class="input-field">
+                    <option value="native">Native Token</option>
+                </select>
+            </div>
+            
+            <div class="fee-estimate" id="fee-estimate">
+                <span>Estimated Fee:</span>
+                <span id="estimated-fee">~</span>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancel-send-btn" class="btn btn-secondary">Cancel</button>
+                <button id="confirm-send-btn" class="btn btn-primary">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receive Modal -->
+    <div id="receive-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Receive</h2>
+                <button class="close-btn" id="close-receive-modal">✕</button>
+            </div>
+            
+            <div class="qr-section">
+                <canvas id="qr-canvas"></canvas>
+            </div>
+            
+            <div class="receive-address">
+                <p id="receive-address-text">0x0000...0000</p>
+                <button id="copy-receive-address" class="btn btn-primary">Copy Address</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Token Modal -->
+    <div id="add-token-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Custom Token</h2>
+                <button class="close-btn" id="close-add-token-modal">✕</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Token Address</label>
+                <input type="text" id="token-address" class="input-field" 
+                       placeholder="0x...">
+            </div>
+            
+            <div class="form-group">
+                <label>Token Symbol</label>
+                <input type="text" id="token-symbol" class="input-field" 
+                       placeholder="e.g., USDT">
+            </div>
+            
+            <div class="form-group">
+                <label>Token Name</label>
+                <input type="text" id="token-name" class="input-field" 
+                       placeholder="e.g., Tether USD">
+            </div>
+            
+            <div class="form-group">
+                <label>Decimals</label>
+                <input type="number" id="token-decimals" class="input-field" 
+                       placeholder="18" value="18">
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancel-add-token-btn" class="btn btn-secondary">Cancel</button>
+                <button id="confirm-add-token-btn" class="btn btn-primary">Add Token</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swap Modal -->
+    <div id="swap-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Swap</h2>
+                <button class="close-btn" id="close-swap-modal">✕</button>
+            </div>
+            
+            <div class="swap-container">
+                <div class="swap-input-group">
+                    <label>From</label>
+                    <div class="swap-input-wrapper">
+                        <input type="number" id="swap-from-amount" class="input-field" 
+                               placeholder="0.00">
+                        <select id="swap-from-token" class="token-select">
+                            <option value="eth">ETH</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="swap-reverse-btn" id="swap-reverse">⇅</button>
+
+                <div class="swap-input-group">
+                    <label>To (Estimated)</label>
+                    <div class="swap-input-wrapper">
+                        <input type="number" id="swap-to-amount" class="input-field" 
+                               placeholder="0.00" readonly>
+                        <select id="swap-to-token" class="token-select">
+                            <option value="usdt">USDT</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="swap-rate">
+                    <span>Rate:</span>
+                    <span id="swap-rate-display">1 ETH = ~2000 USDT</span>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancel-swap-btn" class="btn btn-secondary">Cancel</button>
+                <button id="confirm-swap-btn" class="btn btn-primary">Swap</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
 
